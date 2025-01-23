@@ -11,8 +11,9 @@ class MenuCallBack(CallbackData, prefix="menu"):
     product_id: int | None = None
 
 
-def get_user_main_btns(*, level: int, sizes: tuple[int] = (2,)): # Пользовательское меню lvl 0
-    keyboard = InlineKeyboardBuilder() # Создать клавиатуру
+# Пользовательское меню lvl 0
+def get_user_main_btns(*, level: int, sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
     btns = {
         "Товары 🍕": "catalog",
         "Корзина 🛒": "cart",
@@ -33,8 +34,8 @@ def get_user_main_btns(*, level: int, sizes: tuple[int] = (2,)): # Пользо�
     return keyboard.adjust(*sizes).as_markup()
 
 
-def get_user_catalog_btns(*, level: int, categories: list, sizes: tuple[int] = (2,)): # Пользовательское меню lvl 1
-    keyboard = InlineKeyboardBuilder() # Создать клавиатуру
+def get_user_catalog_btns(*, level: int, categories: list, sizes: tuple[int] = (2,)): 
+    keyboard = InlineKeyboardBuilder()
     keyboard.add(InlineKeyboardButton(text='Назад',
                 callback_data=MenuCallBack(level=level-1, menu_name='main').pack()))
     keyboard.add(InlineKeyboardButton(text='Корзина 🛒',
@@ -46,7 +47,7 @@ def get_user_catalog_btns(*, level: int, categories: list, sizes: tuple[int] = (
 
 
 def get_products_btns(*, level: int, category: int, page: int, pagination_btns: dict, product_id: int, sizes: tuple[int] = (2, 1)):
-    keyboard = InlineKeyboardBuilder() # Создать клавиатуру
+    keyboard = InlineKeyboardBuilder()
     keyboard.add(InlineKeyboardButton(text='Назад',
                 callback_data=MenuCallBack(level=level-1, menu_name='catalog').pack()))
     keyboard.add(InlineKeyboardButton(text='Корзина 🛒',
@@ -74,7 +75,7 @@ def get_products_btns(*, level: int, category: int, page: int, pagination_btns: 
 
 
 def get_user_cart(*, level: int, page: int | None, pagination_btns: dict | None, product_id: int | None, sizes: tuple[int] = (3,)):
-    keyboard = InlineKeyboardBuilder() # Создать клавиатуру
+    keyboard = InlineKeyboardBuilder()
     if page:
         keyboard.add(InlineKeyboardButton(text='Удалить',
                     callback_data=MenuCallBack(level=level, menu_name='delete', product_id=product_id, page=page).pack()))
@@ -107,7 +108,7 @@ def get_user_cart(*, level: int, page: int | None, pagination_btns: dict | None,
 
 
 def get_callback_btns(*, btns: dict[str, str], sizes: tuple[int] = (2,)):
-    keyboard = InlineKeyboardBuilder() # Создать клавиатуру
+    keyboard = InlineKeyboardBuilder()
     for text, data in btns.items():
         keyboard.add(InlineKeyboardButton(text=text, callback_data=data))
     return keyboard.adjust(*sizes).as_markup()

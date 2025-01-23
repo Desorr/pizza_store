@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from database.models import Base
 from database.orm_query import orm_add_banner_description, orm_create_categories
 from common.texts_for_db import categories, description_for_info_pages
+from utils.banner_change import prepare_banner_data
 
 
 # from .env file:
@@ -15,14 +16,17 @@ engine = create_async_engine(os.getenv('DB_URL'), echo=True) # Подтягив�
 session_maker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False) # Берем сессии, чтобы делать запросы в БД. bind-подвязываем движок, expire_on_commit-воспользоваться сессией повторно после commit(чтобы не закрывалась)
 
 
-async def create_db(): # Создать все таблицы
+# Создать все таблицы, добавить категории и описание к баннерам
+async def create_db(): 
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all) # Создать все таблицы
+        await conn.run_sync(Base.metadata.create_all)
     async with session_maker() as session:
-        await orm_create_categories(session, categories) # Создать все категории
-        await orm_add_banner_description(session, description_for_info_pages) # Добавить описание для баннеров
+        await orm_create_categories(session, categories)
+        banner_data_list = prepare_banner_data(description_for_info_pages)
+        for banner_data in banner_data_list:
+            await orm_add_banner_description(session, banner_data)
 
-
-async def drop_db(): # Удалить все таблицы
+# Удалить все таблицы
+async def drop_db(): 
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all) # Удалить все таблицы
+        await conn.run_sync(Base.metadata.drop_all)

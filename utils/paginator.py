@@ -1,7 +1,8 @@
 import math
 
 
-class Paginator: # Пагинатор
+# Пагинатор
+class Paginator:
     def __init__(self, array: list | tuple, page: int=1, per_page: int=1):
         self.array = array
         self.per_page = per_page

@@ -9,7 +9,7 @@ def get_keyboard(
     request_location: int = None,
     sizes: tuple[int] = (2,),
 ):
-    keyboard = ReplyKeyboardBuilder()  # Создать клавиатуру
+    keyboard = ReplyKeyboardBuilder()
 
     for index, text in enumerate(btns, start=0):
         if request_contact and request_contact == index:
@@ -22,4 +22,4 @@ def get_keyboard(
 
     return keyboard.adjust(*sizes).as_markup(
         resize_keyboard=True, input_field_placeholder=placeholder
-    )  # Количество и ряд кнопок
+    ) 

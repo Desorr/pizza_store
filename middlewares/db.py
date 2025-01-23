@@ -18,5 +18,5 @@ class DataBaseSession(BaseMiddleware):
         data: Dict[str, Any],
     ) -> Any:
         async with self.session_pool() as session:
-            data['session'] = session # В словарь data добавить объект сессии
+            data['session'] = session 
             return await handler(event, data)

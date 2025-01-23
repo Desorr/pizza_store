@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from dotenv import find_dotenv, load_dotenv
 
-load_dotenv(find_dotenv())  # Автоматически находит и подгружает переменные из файла .env
+load_dotenv(find_dotenv())
 
 from middlewares.db import DataBaseSession
 from database.engine import create_db, drop_db, session_maker
@@ -14,23 +14,23 @@ from handlers.user_group import user_group_router
 from handlers.admin_private import admin_router
 
 
-bot = Bot(token=os.getenv("TOKEN"), parse_mode=ParseMode.HTML)  # Инициализация бота и добавить форматировать текст в боте
+bot = Bot(token=os.getenv("TOKEN"), parse_mode=ParseMode.HTML)
 bot.my_admins_list = [] # Список админов
 
-dp = Dispatcher()  # Данный класс принимает и обрабатывает все апдейты
+dp = Dispatcher()
 
-dp.include_router(user_private_router)  # Подключаем роутеры с хэндлеров бот
-dp.include_router(user_group_router)  # Подключаем роутеры с хэндлеров группа
-dp.include_router(admin_router) # Подключаем роутеры с хэндлеров админа бот
+dp.include_router(user_private_router)  
+dp.include_router(user_group_router)  
+dp.include_router(admin_router)
 
-async def on_startup(bot): # При запуске бота
+# Запуск бота
+async def on_startup(bot):
     # await drop_db() # Удалить БД
     await create_db() # Создать БД
 
-
-async def on_shutdown(bot): # При выключении бота
+# При выключении бота
+async def on_shutdown(bot):
     print('бот лег')
-
 
 async def main():
     dp.startup.register(on_startup) # При включении бота вызвать функцию
@@ -40,4 +40,4 @@ async def main():
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()) # Запускает бота в работу, бот слушает сервер о наличии обновлений, у нас определенные - допустимые
 
 
-asyncio.run(main())  # Запуск
+asyncio.run(main())

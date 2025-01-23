@@ -11,26 +11,27 @@ user_private_router = Router()
 user_private_router.message.filter(ChatTypeFilter(["private"]))  # Сообщения которые работают в боте
 
 
+# Меню кнопок lvl 0
 @user_private_router.message(CommandStart())
 async def start_cmd(message: types.Message, session: AsyncSession):
-    media, reply_markup = await get_menu_content(session, level=0, menu_name="main") # Получаем изображение и клавиатуру
+    media, reply_markup = await get_menu_content(session, level=0, menu_name="main")
     await message.answer_photo(media.media, caption=media.caption, reply_markup=reply_markup)
 
-
+# Добавить товар в корзину
 async def add_to_cart(callback: types.CallbackQuery, callback_data: MenuCallBack, session: AsyncSession):
-    user = callback.from_user # Получаем id
+    user = callback.from_user 
     await orm_add_user( 
         session,
         user_id=user.id,
         first_name=user.first_name,
         last_name=user.last_name,
         phone=None,
-    ) # Добавляем его в БД
-    await orm_add_to_cart(session, user_id=user.id, product_id=callback_data.product_id) # Добавить товар в корзину
+    ) 
+    await orm_add_to_cart(session, user_id=user.id, product_id=callback_data.product_id)
     await callback.answer("Товар добавлен в корзину.")
 
-
-@user_private_router.callback_query(MenuCallBack.filter()) # Фильтр по префиксу
+# Меню в зависимости от lvl
+@user_private_router.callback_query(MenuCallBack.filter())
 async def user_menu(callback: types.CallbackQuery, callback_data: MenuCallBack, session: AsyncSession):
     if callback_data.menu_name == "add_to_cart":
         await add_to_cart(callback, callback_data, session)

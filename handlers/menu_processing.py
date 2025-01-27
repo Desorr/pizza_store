@@ -1,4 +1,6 @@
 from aiogram.types import InputMediaPhoto
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import InlineKeyboardButton
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.orm_query import (
     orm_add_to_cart,
@@ -9,7 +11,7 @@ from database.orm_query import (
     orm_get_user_carts,
     orm_reduce_product_in_cart,
 )
-from kbds.inline import get_products_btns, get_user_cart, get_user_catalog_btns, get_user_main_btns
+from kbds.inline import MenuCallBack, get_callback_btns, get_products_btns, get_user_cart, get_user_catalog_btns, get_user_main_btns
 from utils.paginator import Paginator
 
 
@@ -89,6 +91,27 @@ async def carts(session, level, menu_name, page, user_id, product_id): # Lvl 3
         kbds = get_user_cart(level=level, page=page, pagination_btns=pagination_btns, product_id=cart.product.id)
     return image, kbds
 
+# Оплата
+async def payment(session, level, user_id):  # Lvl 4
+    banner = await orm_get_banner(session, "payments")
+    payment_url = f"https://example.com/payment?user_id={user_id}"
+    
+    # Создание изображения с описанием
+    image = InputMediaPhoto(
+        media=banner.image,
+        caption=f"<strong>{banner.description}</strong>\n\nДля оплаты нажмите на кнопку ниже."
+    )
+    
+    # Создание клавиатуры вручную
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(
+            text="Оплатить 💳",
+            url=payment_url  # URL-кнопка
+        ))
+    
+    return image, keyboard.as_markup()
+
+
 # Получить меню в зависимости от аргументов
 async def get_menu_content( 
     session: AsyncSession,
@@ -107,3 +130,5 @@ async def get_menu_content(
         return await products(session, level, category, page)
     elif level == 3:
         return await carts(session, level, menu_name, page, user_id, product_id)
+    elif level == 4:
+        return await payment(session, level, user_id)

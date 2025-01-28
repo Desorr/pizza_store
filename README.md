@@ -17,6 +17,8 @@
 1. Python 3.8+
 2. Docker (для контейнеризации)
 3. PostgreSQL (или используйте Docker для локальной базы данных)
+4. FastAPI
+5. Aiogram 3.0+
 
 ### Шаги для установки
 
@@ -87,8 +89,8 @@ telegram-pizza-bot/
 ├── handlers/   
 │ ├── user_private.py # Обработчики для личных сообщений пользователей  
 │ ├── user_group.py # Обработчики для групповых чатов  
-│ ├── menu_processing.py # Обработчики меню в зависимости от lvl
-│ ├── admin_private.py # Обработчики для администратора             
+│ ├── menu_processing.py # Обработчики меню в зависимости от lvl                                 
+│ ├── admin_private.py # Обработчики для администратора               
 │ └── payment_redsys.py # Обработчики для оплаты через Redsys    
 ├── middlewares/    
 │ └── db.py # Middleware для работы с базой данных   
@@ -97,18 +99,18 @@ telegram-pizza-bot/
 │ └── reply.py # Реплай клавиатура  
 ├── database/   
 │ ├── engine.py # Настройка подключения к базе данных   
-│ ├── models.py # Модели для SQLAlchemy    
+│ ├── models.py # Модели для SQLAlchemy                                                   
 │ ├── schemas_models.py # Валидация
 │ └── orm_query.py # Операции с базой данных через ORM  
 ├── utils/   
 │ ├── banner_change.py # Преобразование данных  
 │ └── paginator.py # Пагинация  
-├── .gitignore # Игноры 
+├── .gitignore # Игноры                                                      
 ├── .env # Файл с переменными окружения     
-├── app.py # Основной файл для запуска FastAPI 
+├── app.py # Основной файл для запуска FastAPI                                 
 ├── docker-compose.yml # Конфигурация Docker  
-├── Dockerfile # Docker 
-├── Dockerfile # Docker
+├── Dockerfile # Docker                                                                         
+├── Dockerfile # Docker                                                                         
 ├── wait-for-it.sh # Ожидания подключений    
 └── README.md # Описание проекта 
 

@@ -100,7 +100,7 @@ telegram-pizza-bot/
 ├── database/   
 │ ├── engine.py # Настройка подключения к базе данных   
 │ ├── models.py # Модели для SQLAlchemy                                                   
-│ ├── schemas_models.py # Валидация
+│ ├── schemas_models.py # Валидация                                                          
 │ └── orm_query.py # Операции с базой данных через ORM  
 ├── utils/   
 │ ├── banner_change.py # Преобразование данных  

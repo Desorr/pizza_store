@@ -1,8 +1,6 @@
 import os
 from aiogram import Router, types
-from aiogram.types import Message
-from aiogram.types import CallbackQuery
-
+from aiogram.types import Message, CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.orm_query import orm_get_user_carts, orm_clear_user_cart, orm_add_purchase
 

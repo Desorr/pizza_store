@@ -1,8 +1,8 @@
-import asyncio
 import os
-
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from aiogram import Bot, Dispatcher
-from aiogram.enums import ParseMode
+from aiogram.types import Update
 from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
@@ -15,31 +15,35 @@ from handlers.admin_private import admin_router
 from handlers.payment_redsys import pay_redsys_router
 
 
-bot = Bot(token=os.getenv("TOKEN"), parse_mode=ParseMode.HTML)
+bot = Bot(token=os.getenv("TOKEN"))
 bot.my_admins_list = [] # Список админов
 
 dp = Dispatcher()
 
-dp.include_router(user_private_router)  
-dp.include_router(user_group_router)  
+dp.include_router(user_private_router)
+dp.include_router(user_group_router)
 dp.include_router(admin_router)
 dp.include_router(pay_redsys_router)
 
-# Запуск бота
-async def on_startup(bot):
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     # await drop_db() # Удалить БД
-    await create_db() # Создать БД
+    await create_db()  # Создать БД
+    dp.update.middleware(DataBaseSession(session_pool=session_maker))
 
-# При выключении бота
-async def on_shutdown(bot):
-    print('Бот остановлен.')
+    webhook_url = os.getenv("WEBHOOK_URL")
 
-async def main():
-    dp.startup.register(on_startup) # При включении бота вызвать функцию
-    dp.shutdown.register(on_shutdown) # При выключении бота вызвать функцию
-    dp.update.middleware(DataBaseSession(session_pool=session_maker)) # В каждый хэндлер пробрасывается сессия
-    await bot.delete_webhook(drop_pending_updates=True) # Скипнуть апйдейты, когда бот не работал
-    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()) # Запускает бота в работу, бот слушает сервер о наличии обновлений, у нас определенные - допустимые
+    await bot.delete_webhook(drop_pending_updates=True)
 
+    await bot.set_webhook(f"{webhook_url}/webhook")
+    yield
+    print("Остановка бота...")
+    await bot.delete_webhook(drop_pending_updates=True)
 
-asyncio.run(main())
+app = FastAPI(lifespan=lifespan)
+
+@app.post("/webhook")
+async def handle_webhook(update: Update):
+    await dp.feed_update(bot, update)
+    return {"status": "ok"}

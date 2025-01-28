@@ -12,7 +12,7 @@ services:
       - db
     networks:
       - pizza_network
-    command: ["./wait-for-it.sh", "db:5432", "--", "python", "app.py"]
+    command: ["./wait-for-it.sh", "db:5432", "--", "uvicorn", "app:app"]
     restart: always
     deploy:
       resources:

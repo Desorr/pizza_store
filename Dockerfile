@@ -11,4 +11,4 @@ RUN PIP_PROGRESS_BAR=off pip install -r requirements.txt
 COPY wait-for-it.sh /app/wait-for-it.sh
 RUN chmod +x /app/wait-for-it.sh
 
-CMD ["python", "app.py"]
+CMD ["uvicorn", "app:app"]

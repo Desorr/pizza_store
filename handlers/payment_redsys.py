@@ -4,7 +4,7 @@ from aiogram.types import Message
 from aiogram.types import CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from database.orm_query import orm_get_user_carts, orm_clear_user_cart
+from database.orm_query import orm_get_user_carts, orm_clear_user_cart, orm_add_purchase
 
 pay_redsys_router = Router()
 
@@ -60,9 +60,36 @@ async def process_pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery)
 @pay_redsys_router.message(lambda message: message.successful_payment is not None)
 async def successful_payment_handler(message: Message, session: AsyncSession):
     payment_info = message.successful_payment
+    user_id = message.from_user.id
+    carts = await orm_get_user_carts(session, user_id)
+
+    items = [
+        {
+            "product_id": cart.product.id,
+            "quantity": cart.quantity,
+            "price": cart.product.price,
+        }
+        for cart in carts
+    ]
+
+    total_amount = payment_info.total_amount / 100
+    description = "\n".join(
+        f"Количество: {item['quantity']}. Название: {item['product_id']}. Цена: {item['price']}"
+        for item in items
+    )
+
+    await orm_add_purchase(
+        session=session,
+        user_id=user_id,
+        total_amount=total_amount,
+        currency=payment_info.currency,
+        description=description,
+        items=items,
+    )
+    await orm_clear_user_cart(session, user_id)
+
     await message.answer(
         text=f"Спасибо за оплату! 🎉\n"
              f"Сумма: {payment_info.total_amount / 100:.2f} {payment_info.currency}\n"
-             f"Вы купили: {payment_info.invoice_payload}"
+             f"Описание: {payment_info.invoice_payload}"
     )
-    await orm_clear_user_cart(session, message.from_user.id) # Очистить корзину

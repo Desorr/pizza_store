@@ -1,7 +1,7 @@
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
-from database.models import Banner, Cart, Category, Product, User
+from database.models import Banner, Cart, Category, Product, User, Purchase, PurchaseItem
 from database.schemas_models import ProductCreate, ProductUpdate, UserCreate, BannerUpdate
 from pydantic import ValidationError
 
@@ -173,3 +173,25 @@ async def orm_clear_user_cart(session: AsyncSession, user_id: int):
     query = delete(Cart).where(Cart.user_id == user_id)
     await session.execute(query)
     await session.commit()
+
+############################ Покупки ######################################
+
+# Добавить покупку в базу данных с использованием транзакции.
+async def orm_add_purchase(session, user_id, total_amount, currency, description, items):
+    purchase = Purchase(
+        user_id=user_id,
+        total_amount=total_amount,
+        currency=currency,
+        description=description,
+    )
+    session.add(purchase)
+    await session.flush()
+
+    for item in items:
+        purchase_item = PurchaseItem(
+            purchase_id=purchase.id,
+            product_id=item["product_id"],
+            quantity=item["quantity"],
+            price=item["price"],
+        )
+        session.add(purchase_item)

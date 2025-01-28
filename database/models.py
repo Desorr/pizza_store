@@ -53,3 +53,24 @@ class Cart(Base):
     quantity: Mapped[int] 
     user: Mapped['User'] = relationship(backref='cart') # Обратная связь, чтобы могли делать выборку из БД связанных моделей(пользователь-корзина)
     product: Mapped['Product'] = relationship(backref='cart') # Обратная связь, чтобы могли делать выборку из БД связанных моделей(продукт-корзина)
+
+
+class Purchase(Base):
+    __tablename__ = 'purchase'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.user_id'), nullable=False)
+    total_amount: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+    currency: Mapped[str] = mapped_column(String(10), default='USD')
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    items: Mapped[list['PurchaseItem']] = relationship(back_populates='purchase')
+
+
+class PurchaseItem(Base):
+    __tablename__ = 'purchase_item'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    purchase_id: Mapped[int] = mapped_column(ForeignKey('purchase.id'), nullable=False)
+    product_id: Mapped[int] = mapped_column(ForeignKey('product.id'), nullable=False)
+    quantity: Mapped[int] = mapped_column(nullable=False)
+    price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+    purchase: Mapped['Purchase'] = relationship(back_populates='items')
+    product: Mapped['Product'] = relationship(backref='purchase_items')

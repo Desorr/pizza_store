@@ -25,8 +25,8 @@
 1. **Клонируйте репозиторий:**
 
     ```bash
-    git clone https://github.com/Desorr/telegram-pizza-bot.git
-    cd telegram-pizza-bot
+    git clone https://github.com/Desorr/pizza_store.git
+    cd pizza_store
     ```
 
 2. **Создайте файл `.env`:**

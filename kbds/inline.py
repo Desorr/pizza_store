@@ -97,7 +97,7 @@ def get_user_cart(*, level: int, page: int | None, pagination_btns: dict | None,
         InlineKeyboardButton(text='На главную 🏠',
                     callback_data=MenuCallBack(level=0, menu_name='main').pack()),
         InlineKeyboardButton(text='Заказать',
-                    callback_data=MenuCallBack(level=4, menu_name='order_payment').pack()),
+                    callback_data="process_order")
         ]
         return keyboard.row(*row2).as_markup()
     else:

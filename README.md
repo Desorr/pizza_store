@@ -109,8 +109,7 @@ telegram-pizza-bot/
 ├── .env # Файл с переменными окружения     
 ├── app.py # Основной файл для запуска FastAPI                                 
 ├── docker-compose.yml # Конфигурация Docker  
-├── Dockerfile # Docker                                                                         
-├── Dockerfile # Docker                                                                         
+├── Dockerfile # Docker                                                                                       
 ├── wait-for-it.sh # Ожидания подключений    
 └── README.md # Описание проекта 
 

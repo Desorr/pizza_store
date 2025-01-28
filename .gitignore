@@ -1,2 +1,5 @@
 /.env
 /venv
+/__pychace__
+/.vscode
+desktop.ini
